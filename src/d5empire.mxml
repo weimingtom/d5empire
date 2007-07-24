@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import org.d5.base.Player;
+			
+			public function init():void
+			{
+				var npc:Player=new Player();
+				stage.addChild(npc);
+			}
+		]]>
+	</mx:Script>
+</mx:Application>
