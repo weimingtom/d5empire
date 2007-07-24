@@ -3,11 +3,19 @@
 	<mx:Script>
 		<![CDATA[
 			import org.d5.base.Player;
+			import flash.events.MouseEvent;
+			public var npc:Player=new Player("Benmouse",100,200);
 			
 			public function init():void
 			{
-				var npc:Player=new Player();
+				
 				stage.addChild(npc);
+				stage.addEventListener(MouseEvent.MOUSE_DOWN,addTarget);
+			}
+			
+			public function addTarget(e:MouseEvent):void
+			{
+				npc.addMoveTarget(new Array(e.stageX,e.stageY));
 			}
 		]]>
 	</mx:Script>
