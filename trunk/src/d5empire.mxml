@@ -10,7 +10,7 @@
 			{
 				
 				stage.addChild(npc);
-				stage.addEventListener(MouseEvent.MOUSE_DOWN,addTarget);
+				stage.addEventListener(MouseEvent.CLICK,addTarget);
 			}
 			
 			public function addTarget(e:MouseEvent):void
