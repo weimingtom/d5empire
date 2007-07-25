@@ -6,7 +6,7 @@ package org.d5.base
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
-	import flash.text.TextField;
+	import mx.controls.Label;
 	
 	public class Player extends Sprite
 	{
@@ -31,9 +31,9 @@ package org.d5.base
 			var loadinfo:LoaderInfo=loader.contentLoaderInfo;
 			player=loadinfo.content as MovieClip;
 			player.addEventListener(Event.ENTER_FRAME,moveControler);
+			playerMoveStop();												//停止角色走动
 			main.addChild(player);
-			username.text=main_name;
-			main.addChild(username);
+			buildNameLabel(main_name);
 		}
 		
 		private function moveControler(e:Event):void
@@ -44,6 +44,12 @@ package org.d5.base
 			{
 				// 计算移动方向
 				_direction=(getTarget("x")-main.x)>0 ? 1 : -1;
+				if(_direction==-1)
+				{
+					set_playerDirection("left");
+				}else{
+					set_playerDirection("right");
+				}
 				main.x+=speed*_direction;
 				if(Math.abs(getTarget("x")-main.x)<speed/2) main.x=getTarget("x");
 			}
@@ -60,7 +66,11 @@ package org.d5.base
 			{
 				// 清除目标坐标
 				moveDone();
+			}else if(!player.move_status){
+				playerMoveAction();
 			}
+			
+			
 		}
 		
 		public function getTestData():Object
@@ -87,6 +97,7 @@ package org.d5.base
 		private function moveDone():void
 		{
 			this.moveArr.shift();
+			playerMoveStop();
 		}
 		
 		public function addMoveTarget(target:Array):void
@@ -109,16 +120,41 @@ package org.d5.base
 			return main.x;
 		}
 		
+		private function buildNameLabel(mytext:String):void
+		{
+			username=new Label();
+			username.move(100,100);
+			username.text=mytext;
+			main.addChild(username);
+		}
+		/* ------ 角色控制区 ------ */
+		private function playerMoveAction():void
+		{
+			player.gotoAndPlay(player.playlab);
+			player.move_status=true;
+		}
+		
+		private function playerMoveStop():void
+		{
+			player.gotoAndStop(player.playlab);
+			player.move_status=false;
+		}
+		
+		private function set_playerDirection(d:String):void
+		{
+			player.playlab=d;
+		}
+		
 		
 		
 		public var main:MovieClip=new MovieClip;
 		public var main_name:String;
 		public var player:MovieClip;
 		
-		public var username:TextField=new TextField();
+		public var username:Label;
 		private var loader:Loader=new Loader();
 		private var url:String="lib/player.swf";
 		private var moveArr:Array=new Array();
-		private var speed:int=5;
+		private var speed:int=3;
 	}
 }
