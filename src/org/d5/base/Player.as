@@ -6,7 +6,7 @@ package org.d5.base
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
-	import mx.controls.Label;
+	import flash.text.TextField;
 	
 	public class Player extends Sprite
 	{
@@ -122,9 +122,9 @@ package org.d5.base
 		
 		private function buildNameLabel(mytext:String):void
 		{
-			username=new Label();
-			username.move(100,100);
+			username=new TextField();
 			username.text=mytext;
+			username.selectable=false;
 			main.addChild(username);
 		}
 		/* ------ 角色控制区 ------ */
@@ -151,7 +151,7 @@ package org.d5.base
 		public var main_name:String;
 		public var player:MovieClip;
 		
-		public var username:Label;
+		public var username:TextField;
 		private var loader:Loader=new Loader();
 		private var url:String="lib/player.swf";
 		private var moveArr:Array=new Array();
