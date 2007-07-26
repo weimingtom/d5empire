@@ -4,13 +4,22 @@
 		<![CDATA[
 			import org.d5.base.Player;
 			import flash.events.MouseEvent;
+			import flash.net.NetConnection;
+
 			public var npc:Player=new Player("Benmouse",100,200);
 			
 			public function init():void
 			{
-				
+				// 连接服务器
+				var nc:NetConnection = new NetConnection();
+				nc.addEventListener(NetStatusEvent.NET_STATUS,myreturn);
+				nc.connect("rtmp://localhost/streamServer");
 				stage.addChild(npc);
 				stage.addEventListener(MouseEvent.CLICK,addTarget);
+			}
+			public function myreturn(e:NetStatusEvent):void
+			{
+				tester.text=e.info.toString();
 			}
 			
 			public function addTarget(e:MouseEvent):void
@@ -19,4 +28,7 @@
 			}
 		]]>
 	</mx:Script>
+	<mx:TextInput id="tester" width="137" height="24" x="10" y="10">
+		
+	</mx:TextInput>
 </mx:Application>
