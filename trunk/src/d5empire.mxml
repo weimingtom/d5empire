@@ -3,30 +3,26 @@
 	<mx:Script>
 		<![CDATA[
 			import org.d5.base.Player;
+			import org.d5.server.D5server;
 			import flash.events.MouseEvent;
-			import flash.net.NetConnection;
-
-			public var npc:Player=new Player("Benmouse",100,200);
+			public var i:int=1;
 			
 			public function init():void
 			{
-				// 连接服务器
-				var nc:NetConnection = new NetConnection();
-				nc.addEventListener(NetStatusEvent.NET_STATUS,myreturn);
-				nc.connect("rtmp://localhost/streamServer");
-				stage.addChild(npc);
-				stage.addEventListener(MouseEvent.CLICK,addTarget);
+				this["player"+i]=new Player("Benmouse",250,200);
+				stage.addChild(this["player"+i]);
+				//stage.addEventListener(MouseEvent.CLICK,addTarget);
+				
 			}
-			public function myreturn(e:NetStatusEvent):void
-			{
-				//tester.text=e.info.toString();
-			}
-			
+
 			public function addTarget(e:MouseEvent):void
 			{
-				npc.addMoveTarget(new Array(e.stageX,e.stageY));
+				//npc.addMoveTarget(new Array(e.stageX,e.stageY));
 			}
+			
 		]]>
 	</mx:Script>
-
+	<mx:TextArea id="tester">
+		
+	</mx:TextArea>
 </mx:Application>

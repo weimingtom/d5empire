@@ -12,18 +12,16 @@ package org.d5.base
 	{
 		public function Player(name:String,x:int,y:int):void
 		{
-			// Load lib
-			var url:URLRequest=new URLRequest(url);
-			var t_info : LoaderInfo = loader.contentLoaderInfo;
-			t_info.addEventListener(Event.COMPLETE, buildPlayer);
-			loader.load(url);
-			
+			// 数据初始化
 			main.x=x;
 			main.y=y;
 			main_name=name;
 			
-			this.addChild(main);
-			this.addChild(loader);
+			// 加载角色
+			var url:URLRequest=new URLRequest(url);
+			var t_info : LoaderInfo = loader.contentLoaderInfo;
+			t_info.addEventListener(Event.COMPLETE, buildPlayer);
+			loader.load(url);
 		}
 		
 		public function buildPlayer(e:Event):void
@@ -34,6 +32,7 @@ package org.d5.base
 			playerMoveStop();												//停止角色走动
 			main.addChild(player);
 			buildNameLabel(main_name);
+			this.addChild(main);
 		}
 		
 		private function moveControler(e:Event):void
@@ -122,8 +121,7 @@ package org.d5.base
 		
 		private function buildNameLabel(mytext:String):void
 		{
-			username=new TextField();
-			username.text=mytext;
+			username.text="Benmouse";
 			username.selectable=false;
 			main.addChild(username);
 		}
@@ -150,8 +148,8 @@ package org.d5.base
 		public var main:MovieClip=new MovieClip;
 		public var main_name:String;
 		public var player:MovieClip;
-		
-		public var username:TextField;
+		public var username:TextField=new TextField();
+
 		private var loader:Loader=new Loader();
 		private var url:String="lib/player.swf";
 		private var moveArr:Array=new Array();
