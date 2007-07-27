@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="init()">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="init()" >
 	<mx:Script>
 		<![CDATA[
 			import org.d5.base.Player;
 			import org.d5.server.D5server;
 			import flash.events.MouseEvent;
-			public var i:int=1;
 			
+
 			public function init():void
 			{
-				this["player"+i]=new Player("Benmouse",250,200);
-				stage.addChild(this["player"+i]);
+				var userList:Array=new Array("tester1","tester2");
+				var main:D5empire=new D5empire(userList);
+				
+				var lister:Array=main.getUserList();
+				for(var i:int=0;i<userList.length;i++)
+				{
+					try
+					{
+						stage.addChild(main.getUser(lister[i]));
+					}catch(e:Object){}
+				}
 				//stage.addEventListener(MouseEvent.CLICK,addTarget);
 				
 			}
@@ -19,10 +28,6 @@
 			{
 				//npc.addMoveTarget(new Array(e.stageX,e.stageY));
 			}
-			
 		]]>
 	</mx:Script>
-	<mx:TextArea id="tester">
-		
-	</mx:TextArea>
 </mx:Application>

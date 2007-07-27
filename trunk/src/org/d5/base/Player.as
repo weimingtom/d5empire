@@ -121,7 +121,7 @@ package org.d5.base
 		
 		private function buildNameLabel(mytext:String):void
 		{
-			username.text="Benmouse";
+			username.text=main_name;
 			username.selectable=false;
 			main.addChild(username);
 		}
