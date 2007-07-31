@@ -19,10 +19,18 @@ public class Application extends ApplicationAdapter {
 	//连接时触发的函数，定义本过程中的username
 	public boolean appConnect(IConnection conn, Object[] params)
 	{
-		username=(String)params[0];
+		String cinfo=(String)params[0];
+		String infoArray[]=cinfo.split(",");
+		
+		username=infoArray[0];
+		_x=infoArray[1];
+		_y=infoArray[2];
+		OnlineNum++; //在线人数增加
+		
 		//登入时将连接ID和连接信息形成对应关系并存入在线列表
 		String link_id=conn.getClient().getId();
 		onLineClient.put(link_id, conn);
+		onLineUser.put(username, new Object[]{_x,_y});
 		return true;
 	}
 	
@@ -30,6 +38,7 @@ public class Application extends ApplicationAdapter {
 	//通知客户端更新在线列表
 	public void appDisconnect(IConnection conn)
 	{
+		OnlineNum--; // 在线人数减少
 		String dis_link_id=conn.getClient().getId();
 		//根据ID删除对应在线记录
 		onLineClient.remove(dis_link_id);
@@ -44,33 +53,43 @@ public class Application extends ApplicationAdapter {
 		return true;
 	}
 	
-    public String login(int _x,int _y)
+    public String login(int x,int y)
     {
     	IConnection myconn=Red5.getConnectionLocal();
     	//获得ID
     	String myid=myconn.getClient().getId();
     	//获得在线列表
-    	String onliner=getOnlineList();
+    	Object onliner=getOnlineList();
     	//广播在线列表
     	BroadcastOnlineList(onliner,0);
-		
+    	
+    	myconn.setAttribute("_x", x);
+    	myconn.setAttribute("_y", y);
 		//返回数据
     	return myid;
     }
     
     //取得在线列表，对在线的客户端进行遍历，并显示。
-    public String getOnlineList()
+    public Object getOnlineList()
     {
     	Iterator<IConnection> it=appScope.getConnections();
-    	String onLineList="";
+    	Object onLineList[]=new Object[OnlineNum];
+    	Object onLineLister[]=new Object[3];
+    	int i=0;
+    	
     	while(it.hasNext())
     	{
     		IConnection this_conn=it.next();
     		IClient ic=this_conn.getClient();
     		String u=ic.getAttribute("username").toString();
-    		int where[]=(int[])ic.getAttribute("mypoint");
+    		Object where=onLineUser.get(u);
+    		System.out.println("-----------------------");
     		
-    		onLineList+=ic.getId()+","+u+","+where[0]+","+where[1]+";";
+    		onLineLister[0]=u;		// 用户名
+    		onLineLister[1]=where;	// X坐标
+    		
+    		onLineList[i]=onLineLister;
+    		i++;
     	}
     	return onLineList;
     }
@@ -92,7 +111,7 @@ public class Application extends ApplicationAdapter {
     
     //广播在线列表
     //0-全部广播 1-最后一次连接的不广播
-    private void BroadcastOnlineList(String onLineList,Integer mode)
+    private void BroadcastOnlineList(Object onLineList,Integer mode)
     {
     	Iterator<String> bc_id=onLineClient.keySet().iterator();
     	while(bc_id.hasNext())
@@ -138,6 +157,9 @@ public class Application extends ApplicationAdapter {
     
 	private IScope appScope;
 	private String username="";			// 用户名
-	private int mypoint[]=new int[2];	// 当前坐标
+	private String _x;
+	private String _y;
 	private Map<String,IConnection> onLineClient=new HashMap<String,IConnection>();
+	private Map<String,Object> onLineUser=new HashMap<String,Object>();
+	public static int OnlineNum=0;		// 最大在线人数
 }
