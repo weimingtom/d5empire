@@ -19,18 +19,14 @@ public class Application extends ApplicationAdapter {
 	//连接时触发的函数，定义本过程中的username
 	public boolean appConnect(IConnection conn, Object[] params)
 	{
-		String cinfo=(String)params[0];
-		String infoArray[]=cinfo.split(",");
-		
-		username=infoArray[0];
-		_x=infoArray[1];
-		_y=infoArray[2];
+		username=(String)params[0];
 		OnlineNum++; //在线人数增加
 		
 		//登入时将连接ID和连接信息形成对应关系并存入在线列表
 		String link_id=conn.getClient().getId();
 		onLineClient.put(link_id, conn);
-		onLineUser.put(username, new Object[]{_x,_y});
+		//建立服务器端用户记录
+		onLineUser.put(username, new Object[]{0,0});
 		return true;
 	}
 	
@@ -42,6 +38,9 @@ public class Application extends ApplicationAdapter {
 		String dis_link_id=conn.getClient().getId();
 		//根据ID删除对应在线记录
 		onLineClient.remove(dis_link_id);
+		//根据ID删除对应在线用户资料
+		String u=conn.getClient().getAttribute("username").toString();
+		onLineUser.remove(u);
 		//取得新的在线列表并广播出去
 		BroadcastOnlineList(getOnlineList(),0);
 	}
@@ -55,16 +54,18 @@ public class Application extends ApplicationAdapter {
 	
     public String login(int x,int y)
     {
+
     	IConnection myconn=Red5.getConnectionLocal();
+    	
+    	String u=myconn.getClient().getAttribute("username").toString();
+    	//更新坐标
+    	onLineUser.put(u, new Object[]{x,y});
     	//获得ID
     	String myid=myconn.getClient().getId();
     	//获得在线列表
     	Object onliner=getOnlineList();
     	//广播在线列表
     	BroadcastOnlineList(onliner,0);
-    	
-    	myconn.setAttribute("_x", x);
-    	myconn.setAttribute("_y", y);
 		//返回数据
     	return myid;
     }
@@ -74,7 +75,7 @@ public class Application extends ApplicationAdapter {
     {
     	Iterator<IConnection> it=appScope.getConnections();
     	Object onLineList[]=new Object[OnlineNum];
-    	Object onLineLister[]=new Object[3];
+    	Object onLineLister[]=new Object[2];
     	int i=0;
     	
     	while(it.hasNext())
@@ -83,14 +84,14 @@ public class Application extends ApplicationAdapter {
     		IClient ic=this_conn.getClient();
     		String u=ic.getAttribute("username").toString();
     		Object where=onLineUser.get(u);
-    		System.out.println("-----------------------");
     		
     		onLineLister[0]=u;		// 用户名
     		onLineLister[1]=where;	// X坐标
-    		
+
     		onLineList[i]=onLineLister;
     		i++;
     	}
+    	
     	return onLineList;
     }
     
@@ -157,8 +158,6 @@ public class Application extends ApplicationAdapter {
     
 	private IScope appScope;
 	private String username="";			// 用户名
-	private String _x;
-	private String _y;
 	private Map<String,IConnection> onLineClient=new HashMap<String,IConnection>();
 	private Map<String,Object> onLineUser=new HashMap<String,Object>();
 	public static int OnlineNum=0;		// 最大在线人数
