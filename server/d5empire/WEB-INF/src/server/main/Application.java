@@ -52,28 +52,36 @@ public class Application extends ApplicationAdapter {
 		return true;
 	}
 	
-    public String login(int x,int y)
+	// 用户连接成功后，通知全部客户端有新用户上线
+	// 更新自己的真实信息后，向全部客户端广播
+	// 参数x: X坐标
+	// 参数y: Y坐标
+    public Object login(int x,int y)
     {
-
-    	IConnection myconn=Red5.getConnectionLocal();
-    	
-    	String u=myconn.getClient().getAttribute("username").toString();
-    	//更新坐标
+    	String u=getUsername();
+    	// 更新坐标
     	onLineUser.put(u, new Object[]{x,y});
-    	//获得ID
-    	String myid=myconn.getClient().getId();
-    	//获得在线列表
-    	Object onliner[]=new Object[]{u,onLineUser.get(u)};
-    	//广播在线列表
-    	Broadcaster("userLogin",onliner,0);
+
+    	// 获取即将向其他用户通知当前用户信息
+    	Object loginer[]=new Object[]{u,onLineUser.get(u)};
+    	// 广播上线信息
+    	Broadcaster("userLogin",loginer,0);
+    	
+    	// 获取目前在线列表
+    	Object onliner=getOnlineList();
 		//返回数据
-    	return myid;
+    	return onliner;
     }
     
     // 用户移动
     public void playerMove(int x,int y)
     {
-    	
+    	String u=getUsername();
+    	// 更新坐标
+    	onLineUser.put(u, new Object[]{x,y});
+    	// 获取即将要发送的用户信息
+    	Object mover[]=new Object[]{u,onLineUser.get(u)};
+    	Broadcaster("userMove",mover,0);
     }
     
     //取得在线列表，对在线的客户端进行遍历，并显示。
@@ -152,6 +160,16 @@ public class Application extends ApplicationAdapter {
         }
 
     	return true;
+    }
+    
+    // 获取iClient上的用户名属性（用户标识）
+    private String getUsername()
+    {
+    	IConnection myconn=Red5.getConnectionLocal();
+    	
+    	String u=myconn.getClient().getAttribute("username").toString();
+    	
+    	return u;
     }
     
     /*
