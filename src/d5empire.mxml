@@ -6,27 +6,36 @@
 			import org.d5.server.D5server;
 			import flash.events.MouseEvent;
 			
+			
+			public var local:Player;				// 本地用户
+			public var userList:Array;				// 用户列表，用于创建用户，以用户ID为元素
+			public var mainLocal:D5empire;			// 本地用户列表
+			public var mainOther:D5empire;			// 远程用户列表
+			public var nc:D5server;
 
 			public function init():void
 			{
-				var userList:Array=new Array("tester1","tester2");
-				var main:D5empire=new D5empire(userList);
+				// 定义用户ID列表
+				userList=new Array("Local");
+				// 生成全部用户
+				mainLocal=new D5empire(userList);
+				// 获取本地用户
+				local=mainLocal.getUser("Local");
+				// 定义位置
+				local.setXY(100,100);
+				// 追加本地用户到场景
+				stage.addChild(local);
+				// 定义移动事件
+				stage.addEventListener(MouseEvent.CLICK,addTarget);
 				
-				var lister:Array=main.getUserList();
-				for(var i:int=0;i<userList.length;i++)
-				{
-					try
-					{
-						stage.addChild(main.getUser(lister[i]));
-					}catch(e:Object){}
-				}
-				//stage.addEventListener(MouseEvent.CLICK,addTarget);
-				
+				nc=new D5server("Local");
 			}
-
+			
+			
+			// 方法：为本地用户增加移动目标
 			public function addTarget(e:MouseEvent):void
 			{
-				//npc.addMoveTarget(new Array(e.stageX,e.stageY));
+				local.addMoveTarget(new Array(e.stageX,e.stageY));
 			}
 		]]>
 	</mx:Script>
