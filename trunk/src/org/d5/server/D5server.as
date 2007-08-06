@@ -14,17 +14,17 @@ package org.d5.server
 			init(u);
 		}
 		
-		public function call(f:String,r:Array):void
+		public function callServer(f:String,r:Array):void
 		{
 			this.call(f,serverRes,r);
 		}
 		
-		public function callResult(re:Object)
+		public function callResult(re:Object):Object
 		{
 			return re;
 		}
 		
-		public function callStatus(re:Object)
+		public function callStatus(re:Object):Object
 		{
 			return re;
 		}
@@ -37,7 +37,13 @@ package org.d5.server
 			this.addEventListener(NetStatusEvent.NET_STATUS,netStatusControl);
 		}
 		
-		private host:String="rtmp://localhost/d5empire";
-		private serverRes:Responder=new Responder(callResult,callStatus);;
+		// 连接监听
+		private function netStatusControl(e:NetStatusEvent):void
+		{
+			trace(e.info.code.toString());
+		}
+		
+		private var host:String="rtmp://localhost/d5empire";
+		private var serverRes:Responder=new Responder(callResult,callStatus);;
 	}
 }
