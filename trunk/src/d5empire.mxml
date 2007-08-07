@@ -2,25 +2,32 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="init()" >
 	<mx:Script>
 		<![CDATA[
+			import flash.net.Responder;
+			import flash.net.Responder;
 			import org.d5.base.Player;
 			import org.d5.server.D5server;
 			import flash.events.MouseEvent;
+			import flash.events.NetStatusEvent;
 			
 			
 			public var local:Player;				// 本地用户
 			public var userList:Array;				// 用户列表，用于创建用户，以用户ID为元素
 			public var mainLocal:D5empire;			// 本地用户列表
 			public var mainOther:D5empire;			// 远程用户列表
-			public var nc:D5server;
+			public var myName:String="Benmouse"+int(Math.random()*1000);
+			
+			public var nc:NetConnection=new NetConnection();
+			public var resObj:Responder;
+			
 
 			public function init():void
 			{
 				// 定义用户ID列表
-				userList=new Array("Local");
+				userList=new Array(myName);
 				// 生成全部用户
 				mainLocal=new D5empire(userList);
 				// 获取本地用户
-				local=mainLocal.getUser("Local");
+				local=mainLocal.getUser(myName);
 				// 定义位置
 				local.setXY(100,100);
 				// 追加本地用户到场景
@@ -28,15 +35,70 @@
 				// 定义移动事件
 				stage.addEventListener(MouseEvent.CLICK,addTarget);
 				
-				nc=new D5server("Local");
+				nc.addEventListener(NetStatusEvent.NET_STATUS,netStatusor);
+				nc.connect("rtmp://localhost/d5empire", myName);
+				resObj=new Responder(buildUser);
+				nc.call("login",resObj,100,100);
+				nc.client=this;
 			}
 			
+			public function buildUser(e:Array):void
+			{
+				// 初始化在线名单。形成用户名数组
+				var ulist:Array=new Array();
+				for(var i:int=0;i<e.length;i++)
+				{
+					if(e[i][0]==myName) continue;
+					ulist.push(e[i][0]);
+				}
+				// 定义在线角色
+				mainOther=new D5empire(ulist);
+				
+				// 初始化角色
+				for(i=0;i<e.length;i++)
+				{
+					if(e[i][0]==myName) continue;
+					var player:Player=mainOther.getUser(e[i][0]);
+					player.setXY(e[i][1][0],e[i][1][1]);
+					stage.addChild(player);
+				}
+			}
+			
+			// 方法：连接状态监控
+			public function netStatusor(e:NetStatusEvent):void
+			{
+				output.text=e.info.code;
+			}
 			
 			// 方法：为本地用户增加移动目标
 			public function addTarget(e:MouseEvent):void
 			{
 				local.addMoveTarget(new Array(e.stageX,e.stageY));
+				nc.call("playerMove",null,e.stageX,e.stageY);
+			}
+			
+			
+			// NC回调区
+			
+			public function userLogin(userinfo:Object):void
+			{
+			
+			}
+		
+			public function userMove(userinfo:Object):void
+			{
+				//output.text=userinfo[1][0].toString();
+				//var player:Player=mainOther.getUser(userinfo[0]);
+				//player.addMoveTarget(new Array(userinfo[1][0],userinfo[1][1]));
+			}
+			
+			public function userLogout(userinfo:Object):void
+			{
+			
 			}
 		]]>
 	</mx:Script>
+	<mx:Text id="output">
+		
+	</mx:Text>
 </mx:Application>
