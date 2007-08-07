@@ -17,6 +17,23 @@ package
 			
 		}
 		
+		// 增加新用户
+		public function addUser(userName:String):void
+		{
+			this[userName] = new Player(userName);
+			uList.push(userName);
+		}
+		
+		// 用户退出
+		public function deleteUser(userName:String):void
+		{
+			delete this[userName];
+			for(var i:int=0;i<uList.length;i++)
+			{
+				if(uList[i]==userName) uList.splice(i,1);
+			}
+		}
+		
 		// 获取所有用户列表，返回以用户ID为数组
 		public function getUserList():Array
 		{

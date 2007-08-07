@@ -34,7 +34,7 @@
 	
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>/cgt_chat</param-value>
+		<param-value>/d5empire</param-value>
 	</context-param>
 	
 	<listener>
