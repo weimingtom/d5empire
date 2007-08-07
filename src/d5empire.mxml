@@ -80,21 +80,51 @@
 			
 			// NC回调区
 			
-			public function userLogin(userinfo:Object):void
+			// 新用户加入
+			// userinfo: 由两个元素组成，第一个元素为用户名，第二个元素为用户坐标数组
+			public function userLogin(userinfo:Array):void
 			{
-			
+				if(userinfo[0]!=myName)
+				{
+					try{
+						mainOther.addUser(userinfo[0]);
+						var player:Player=mainOther.getUser(userinfo[0]);
+						player.setXY(userinfo[1][0],userinfo[1][1]);
+						stage.addChild(player);
+					}catch(e:Object){
+						
+					}
+					
+				}
 			}
-		
-			public function userMove(userinfo:Object):void
+			
+			// 用户移动
+			// userinfo: 由两个元素组成，第一个元素为用户名，第二个元素为用户坐标数组
+			public function userMove(userinfo:Array):void
 			{
-				//output.text=userinfo[1][0].toString();
-				//var player:Player=mainOther.getUser(userinfo[0]);
-				//player.addMoveTarget(new Array(userinfo[1][0],userinfo[1][1]));
+				if(userinfo[0]!=myName)
+				{
+					try
+					{
+						var player:Player=mainOther.getUser(userinfo[0]);
+						player.addMoveTarget(userinfo[1]);
+					}catch(e:Object){
+						
+					}
+				}
 			}
 			
-			public function userLogout(userinfo:Object):void
+			// 用户离线
+			// userinfo: 用户名
+			public function userLogout(username:String):void
 			{
-			
+				if(username!=myName)
+				{
+					// 从舞台中删除对象
+					stage.removeChild(mainOther.getUser(username));
+					// 从用户池中删除
+					mainOther.deleteUser(username);
+				}
 			}
 		]]>
 	</mx:Script>
